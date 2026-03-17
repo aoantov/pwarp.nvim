@@ -5,29 +5,22 @@ local M = {}
 --- @alias Project {path: string, name: string}
 --- @class SwitchConfig
 --- @field enabled boolean
---- @field projects table<string,Project>
+--- @field projects Project[]
 --- @class SwitchConfig
 local state = {
   projects = {},
   enabled = true,
 }
 
---- @param project Project
-local function generate_project_key(project)
-  return project.name
-end
-
 --- @param projects Project[]
 local function map_to_projects(projects)
   local project_map = {}
-  local key
 
   for index = 1, #projects do
-    key = generate_project_key(projects[index])
-    project_map[key] = {
+    table.insert(project_map, {
       path = projects[index].path,
       name = projects[index].name,
-    }
+    })
   end
 
   return project_map
@@ -54,19 +47,13 @@ end
 -- Get all projects
 --- @return Project[]
 function M.get_projects()
-  local projects = {}
-
-  for _, meta in pairs(state.projects) do
-    table.insert(projects, meta)
-  end
-
-  return projects
+  return state.projects
 end
 
 -- Are projects empty
 --- @return boolean
 function M.are_projects_empty()
-  if state.projects == {} then
+  if #state.projects == 0 then
     return true
   end
 
@@ -77,7 +64,13 @@ end
 --- @param name string
 --- @return Project | nil
 function M.get_project(name)
-  return state.projects[name]
+  for i = 1, #state.projects do
+    if state.projects[i].name == name then
+      return state.projects[i]
+    end
+  end
+
+  return nil
 end
 
 return M
