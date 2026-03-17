@@ -21,7 +21,8 @@ local function projects_to_view_elements(projects)
     element_name = generate_view_element_name(projects[i])
     table.insert(elements, {
       name = element_name,
-      value = projects[i]
+      value = projects[i],
+      ordinal = projects[i].name
     })
   end
 

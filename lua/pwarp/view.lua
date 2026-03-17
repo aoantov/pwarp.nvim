@@ -38,7 +38,7 @@ local function create_dropdown(opts)
             return {
               value = element.value,
               display = element.name,
-              ordinal = element.name,
+              ordinal = element.ordinal or element.name,
             }
           end,
         }),
@@ -48,7 +48,7 @@ local function create_dropdown(opts)
   end
 end
 
---- @alias ViewElement {name: string, value: unknown}
+--- @alias ViewElement {name: string, value: unknown, ordinal?: string}
 --- @alias ViewOpts {title: string, on_select: function, elements: ViewElement[]}
 --- @param opts ViewOpts
 --- TODO: change it so that it does not create the objects every call
