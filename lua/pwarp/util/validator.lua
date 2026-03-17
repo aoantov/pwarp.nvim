@@ -31,7 +31,7 @@ function M.validate_opts(opts)
     error("Empty config options")
   end
 
-  if opts.enabled and are_projects_present(opts.projects) then
+  if are_projects_present(opts.projects) then
     validate_projects(opts.projects)
   end
 end
