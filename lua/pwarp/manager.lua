@@ -2,14 +2,25 @@ local config = require("pwarp.config")
 
 local M = {}
 
+--- @param project Project
+local function generate_view_element_name(project)
+  local elem_path = string.sub(project.path,-30)
+  if #elem_path < #project.path then
+    elem_path = '...' .. elem_path
+  end
+
+  return project.name .. ": " .. elem_path
+end
+
 --- @param projects Project[]
 local function projects_to_view_elements(projects)
-  local path_length_limit = 30
-  local elements = {}
 
-  for i=1,#projects do
+  local elements = {}
+  local element_name
+  for i=1, #projects do
+    element_name = generate_view_element_name(projects[i])
     table.insert(elements, {
-      name = projects[i].name .. ": " .. string.sub(projects[i].path, path_length_limit*-1),
+      name = element_name,
       value = projects[i]
     })
   end
