@@ -1,38 +1,39 @@
-local GeneralUtils = require("pjswitch.util.general")
+local general_utils = require("pjswitch.util.general")
 
 local M = {}
 
-local function are_opts_present(opts)
-  return opts ~= nil
+--- @param project OptsProject
+local function validate_project(project)
+  general_utils.check_types({ [project.name] = "string", [project.path] = "string" })
+
+  if not general_utils.does_path_exist(project.path) then
+    error("Invalid path for project '" .. project.name .. "'")
+  end
 end
 
-local function are_opts_disabled(opts)
-  return opts.enabled == false
-end
-
+--- @param projects OptsProject
 local function validate_projects(projects)
-  if projects == nil then
-    error("Invalid projects")
-  end
-
   for index = 1, #projects do
-    if projects[index].name == nil or projects[index].path == nil then
-      error("Invalid project")
-    end
-
-    if not GeneralUtils.does_path_exist(projects[index].path) then
-      error("Invalid project")
-    end
+    validate_project(projects[index])
   end
 end
 
---- @param opts Opts
+--- @param projects Project[]
+--- @return boolean
+local function are_projects_present(projects)
+  return projects ~= nil and projects ~= {}
+end
+
+--- Validate options
+--- @param opts? Opts
 function M.validate_opts(opts)
-  if are_opts_disabled(opts) or not are_opts_present(opts) then
-    return
+  if opts == nil or opts == {} then
+    error("Empty config options")
   end
 
-  validate_projects(opts.projects)
+  if opts.enabled and are_projects_present(opts.projects) then
+    validate_projects(opts.projects)
+  end
 end
 
 return M
