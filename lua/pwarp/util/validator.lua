@@ -1,4 +1,4 @@
-local general_utils = require("pjswitch.util.general")
+local general_utils = require("pwarp.util.general")
 
 local M = {}
 

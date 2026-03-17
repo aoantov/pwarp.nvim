@@ -9,11 +9,14 @@ local M = {}
 --- @alias ActionOpts {on_select: function}
 --- @param opts ActionOpts
 local function create_select_action(opts)
-  return function(prompt_bufnr, map)
+  return function(prompt_buf)
     actions.select_default:replace(function()
-      actions.close(prompt_bufnr)
+      actions.close(prompt_buf)
       local selected_element = action_state.get_selected_entry()
-      opts.on_select(selected_element)
+
+      if selected_element ~= nil then
+        opts.on_select(selected_element)
+      end
     end)
     return true
   end
@@ -24,6 +27,7 @@ end
 local function create_dropdown(opts)
   return function()
     local ts_opts = require("telescope.themes").get_dropdown({})
+
     pickers
       .new(ts_opts, {
         attach_mappings = opts.attach_actions,

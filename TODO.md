@@ -1,5 +1,5 @@
 # To Do
 
-- [ ] Allow move from project to project
+- [x] Allow move from project to project
 - [ ] Save previous project's open buffers
-- [ ] Telescope show all available projects
+- [x] Telescope show all available projects

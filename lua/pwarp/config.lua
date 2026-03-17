@@ -1,4 +1,4 @@
-local validator = require("pjswitch.util.validator")
+local validator = require("pwarp.util.validator")
 
 local M = {}
 
@@ -12,10 +12,12 @@ local state = {
   enabled = true,
 }
 
+--- @param project Project
 local function generate_project_key(project)
   return project.name
 end
 
+--- @param projects Project[]
 local function map_to_projects(projects)
   local project_map = {}
   local key
