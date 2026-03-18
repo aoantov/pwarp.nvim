@@ -3,8 +3,8 @@ local M = {}
 
 --- @alias OptsProject {name: string, path: string}
 --- @class Opts
---- @field enabled boolean
---- @field projects OptsProject[]
+--- @field enabled? boolean
+--- @field projects? OptsProject[]
 
 -- Setup 
 --- @param opts? Opts
