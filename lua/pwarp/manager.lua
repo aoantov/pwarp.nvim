@@ -49,23 +49,21 @@ end
 -- List projects
 function M.list()
   if config.are_projects_empty() then
+    print('No projects to list')
+
     return
   end
 
   local projects = config.get_projects()
   local view_elements = get_view_elements_from(projects)
 
-  if #view_elements > 0 then
-    require("pwarp.view").show({
-      title = "Projects",
-      elements = view_elements,
-      on_select = function (element)
-        close_buffs_and_goto(element.value.path)
-      end
-
-    })
-  end
-
+  require("pwarp.view").show({
+    title = "Projects",
+    elements = view_elements,
+    on_select = function (element)
+      close_buffs_and_goto(element.value.path)
+    end
+  })
 end
 
 -- Jump to project with the provided name
