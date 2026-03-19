@@ -13,6 +13,7 @@ local function generate_view_element_name(project)
 end
 
 --- @param projects Project[]
+--- @return ViewElement[]
 local function get_view_elements_from(projects)
   local cwd = vim.fn.getcwd()
 
@@ -48,14 +49,13 @@ end
 
 -- List projects
 function M.list()
-  if config.are_projects_empty() then
-    print('No projects to list')
-
-    return
-  end
-
   local projects = config.get_projects()
   local view_elements = get_view_elements_from(projects)
+
+  if #view_elements == 0 then
+    print('No projects to list')
+    return
+  end
 
   require("pwarp.view").show({
     title = "Projects",
