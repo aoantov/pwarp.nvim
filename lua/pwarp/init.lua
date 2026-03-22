@@ -5,6 +5,7 @@ local M = {}
 --- @class Opts
 --- @field enabled? boolean
 --- @field projects? OptsProject[]
+--- @field config? string
 
 -- Setup 
 --- @param opts? Opts

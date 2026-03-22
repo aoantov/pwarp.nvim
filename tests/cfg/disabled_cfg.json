@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "projects": [
+    {
+      "name": "Disabled",
+      "path": "./lua"
+    }
+  ]
+}

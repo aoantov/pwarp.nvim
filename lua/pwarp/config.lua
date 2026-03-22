@@ -28,20 +28,51 @@ end
 
 --- @param opts Opts
 local function update_state(opts)
-  state.enabled = opts.enabled or state.enabled
+  if opts.enabled ~= nil then
+    state.enabled = opts.enabled
+  end
 
-  if opts.projects ~= nil and opts.projects ~= {} then
+  if state.enabled and opts.projects ~= nil and opts.projects ~= {} then
     state.projects = map_to_projects(opts.projects)
   end
+end
+
+--- @param path string
+--- @return Opts
+local function get_config_from(path)
+  local config_file = io.open(vim.fs.abspath(path))
+
+  if config_file == nil then
+    error("Unable to open configuration file")
+  end
+
+  local json_config_string = config_file:read("*a")
+  local has_file_closed = config_file:close()
+
+  if not has_file_closed then
+    error("Unable to close configuration file")
+  end
+
+  local config = vim.json.decode(json_config_string)
+
+  return config
 end
 
 -- Setup
 --- @param opts? Opts
 function M.setup(opts)
-  if opts ~= nil and opts ~= {} then
-    validator.validate_opts(opts)
-    update_state(opts)
+  local active_opts = opts
+
+  if active_opts == nil or active_opts == {} then
+    return
   end
+
+  if active_opts.config ~= nil then
+    active_opts = get_config_from(active_opts.config)
+  end
+
+  validator.validate_opts(active_opts)
+  update_state(active_opts)
 end
 
 -- Get all projects
