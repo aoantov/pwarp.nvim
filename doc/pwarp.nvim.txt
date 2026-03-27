@@ -1,0 +1,65 @@
+*pwarp.nvim.txt*                                               pwarp.nvim docs
+
+==============================================================================
+Table of Contents                               *pwarp.nvim-table-of-contents*
+
+1. PWarp (Project warp)                                           |pwarp.nvim|
+  - Features                                             |pwarp.nvim-features|
+  - Requirements                                     |pwarp.nvim-requirements|
+  - Installation                                     |pwarp.nvim-installation|
+  - Configuration                                   |pwarp.nvim-configuration|
+  - Usage                                                   |pwarp.nvim-usage|
+
+==============================================================================
+1. PWarp (Project warp)              *pwarp.nvim*
+
+Highly experimental plugin that allows easy switching between projects
+
+FEATURES                     *pwarp.nvim-features*
+- Switching between configured projects quickly
+- List available projects using Telescope
+
+REQUIREMENTS             *pwarp.nvim-requirements*
+
+- Neovim >= 0.9.0 **(nightly highly recommended)**
+- Telescope <https://github.com/nvim-telescope/telescope.nvim>
+
+
+INSTALLATION             *pwarp.nvim-installation*
+
+Install the plugin with your preferred package manager:
+
+>lua
+    -- lazy.nvim
+    {
+      "aoantov/pwarp.nvim",
+      keys = {
+      {
+        "<leader>sp",
+        function() 
+          require("pwarp").list()
+        end,
+        desc = "List projects"
+      }
+      },
+      opts = {
+        enabled = true,
+        projects = {}
+        config = "<path/to/config.json"
+      },
+    }
+<
+
+
+CONFIGURATION           *pwarp.nvim-configuration*
+
+**pwarp.nvim** comes with the following defaults:
+
+>lua
+    {
+      enabled = true,
+      projects = {}
+    }
+<
+
+==============================================================================
