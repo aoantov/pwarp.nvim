@@ -25,7 +25,7 @@ local function get_view_elements_from(projects)
       table.insert(elements, {
         name = element_name,
         value = projects[i],
-        ordinal = projects[i].name
+        ordinal = projects[i].name .. ' ' .. projects[i].path
       })
     end
   end
