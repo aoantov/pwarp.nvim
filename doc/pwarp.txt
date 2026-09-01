@@ -5,7 +5,7 @@ License: MIT
 
 ==============================================================================
 
-CONTENTS                                                pwarp-contents
+CONTENTS                                                *pwarp-contents*
 
 Introduction ........................................ |pwarp-introduction|
 
