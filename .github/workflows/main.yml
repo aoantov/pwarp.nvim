@@ -23,7 +23,19 @@ jobs:
           sudo luarocks install luacheck
 
       - name: Lint
-        run: luacheck tests/ --ignore 113
+        run: make lint
+
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: Prepare Tests
+        run: |
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ../plenary.nvim
+
+      - name: Tests
+        run: make test
 
   stylua:
     name: stylua
