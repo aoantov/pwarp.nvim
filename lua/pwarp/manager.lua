@@ -4,9 +4,9 @@ local M = {}
 
 --- @param project Project
 local function generate_view_element_name(project)
-  local elem_path = string.sub(project.path,-30)
+  local elem_path = string.sub(project.path, -30)
   if #elem_path < #project.path then
-    elem_path = '...' .. elem_path
+    elem_path = "..." .. elem_path
   end
 
   return project.name .. ": " .. elem_path
@@ -19,13 +19,13 @@ local function get_view_elements_from(projects)
 
   local elements = {}
   local element_name
-  for i=1, #projects do
+  for i = 1, #projects do
     if cwd ~= vim.fs.abspath(projects[i].path) then
       element_name = generate_view_element_name(projects[i])
       table.insert(elements, {
         name = element_name,
         value = projects[i],
-        ordinal = projects[i].name .. ' ' .. projects[i].path
+        ordinal = projects[i].name .. " " .. projects[i].path,
       })
     end
   end
@@ -53,22 +53,22 @@ function M.list()
   local view_elements = get_view_elements_from(projects)
 
   if #view_elements == 0 then
-    print('No projects to list')
+    print("No projects to list")
     return
   end
 
   require("pwarp.view").show({
     title = "Projects",
     elements = view_elements,
-    on_select = function (element)
+    on_select = function(element)
       close_buffs_and_goto(element.value.path)
-    end
+    end,
   })
 end
 
 -- Jump to project with the provided name
 --- @param name string
-function M.goto(name)
+function M.go_to(name)
   local project = config.get_project(name)
 
   if project == nil then
@@ -78,6 +78,5 @@ function M.goto(name)
 
   close_buffs_and_goto(project.path)
 end
-
 
 return M

@@ -1,13 +1,13 @@
 local config = require("pwarp.config")
 local pwarp = require("pwarp")
-local stub  = require("luassert.stub")
+local stub = require("luassert.stub")
 
 describe("pwarp", function()
-  before_each(function ()
+  before_each(function()
     -- reset state
     pwarp.setup({
       enabled = true,
-      projects = {}
+      projects = {},
     })
   end)
   describe("setup", function()
@@ -49,74 +49,78 @@ describe("pwarp", function()
       assert.are_equal(false, success)
     end)
     it("when opts have projects,but config file is provided, config file has priority", function()
-      local success= pcall(function()
-        pwarp.setup({ projects = {
-          {
-            name = "Some",
-            path = "./tests"
-          }
-
-        },config = "./tests/cfg/cfg.json" })
+      local success = pcall(function()
+        pwarp.setup({
+          projects = {
+            {
+              name = "Some",
+              path = "./tests",
+            },
+          },
+          config = "./tests/cfg/cfg.json",
+        })
       end)
 
       assert.are_equal(true, success)
       local expected_projects = config.get_projects()
 
       success = pcall(function()
-        pwarp.setup({ projects = {
-          {
-            name = "Some",
-            path = "./tests"
-          }
-
-        },config = "./tests/cfg/cfg.json" })
+        pwarp.setup({
+          projects = {
+            {
+              name = "Some",
+              path = "./tests",
+            },
+          },
+          config = "./tests/cfg/cfg.json",
+        })
       end)
 
-      local projects= config.get_projects()
+      local projects = config.get_projects()
       assert.are_equal(true, success)
-      assert.are_equal(#expected_projects,#projects)
+      assert.are_equal(#expected_projects, #projects)
     end)
-    it('when config file path is not valid, should throw exception', function ()
+    it("when config file path is not valid, should throw exception", function()
       local success = pcall(function()
         pwarp.setup({ config = "./tests/does_not_exist.json" })
       end)
-      assert.are_equal(false,success)
+      assert.are_equal(false, success)
     end)
-    it('when disabled by config, should not setup projects', function ()
+    it("when disabled by config, should not setup projects", function()
       local success = pcall(function()
         pwarp.setup({ config = "./tests/cfg/disabled_cfg.json" })
       end)
       local projects = config.get_projects()
 
-      assert.are_equal(true,success)
-      assert.are_equal(0,#projects)
+      assert.are_equal(true, success)
+      assert.are_equal(0, #projects)
     end)
   end)
   describe("goto", function()
     it("when goto is not a valid project, should print without throw", function()
-      stub(vim,"cmd")
+      stub(vim, "cmd")
 
       local success = pcall(function()
         pwarp.setup({ projects = { { name = "test", path = "/home" } } })
       end)
-      pwarp.goto("not-test")
+      pwarp.go_to("not-test")
 
       local buff_count = #vim.api.nvim_list_bufs()
       assert.are_equal(true, success)
-      assert.are_equal(1,buff_count) -- take into account the test buffer
+      assert.are_equal(1, buff_count) -- take into account the test buffer
       assert.stub(vim.cmd).called(0)
     end)
     it("when goto is a valid project, should print without throw", function()
-      stub(vim,"cmd")
+      stub(vim, "cmd")
 
       local success = pcall(function()
         pwarp.setup({ projects = { { name = "test", path = "/home" } } })
       end)
-      pwarp.goto("test")
+      pwarp.go_to("test")
 
       local buff_count = #vim.api.nvim_list_bufs()
       assert.are_equal(true, success)
-      assert.are_equal(1,buff_count) -- take into account the test buffer
+      assert.are_equal(1, buff_count) -- take into account the test buffer
       assert.stub(vim.cmd).called(1)
       assert.stub(vim.cmd).was_called_with("cd /home")
     end)
