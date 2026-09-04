@@ -1,7 +1,7 @@
 .PHONY: lint test 
 
 test:
-	nvim --headless --noplugin -u scripts/minimal.vim -c "PlenaryBustedDirectory tests/ {minimal_init = 'scripts/minimal.vim'}"
+	bash scripts/run_tests.sh
 
 lint:
 	luacheck lua/ --ignore 113
