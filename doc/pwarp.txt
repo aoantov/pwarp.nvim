@@ -1,0 +1,93 @@
+*pwarp.txt*                       Documentation for pwarp.nvim
+
+Author: aoantov https://github.com/aoantov
+License: MIT
+
+==============================================================================
+
+CONTENTS                                                *pwarp-contents*
+
+Introduction ........................................ |pwarp-introduction|
+
+Installation ........................................ |pwarp-installation|
+
+Configuration ....................................... |pwarp-configuration|
+
+Methods.............................................. |pwarp-methods|
+
+Commands..............................................|pwarp-commands|
+
+
+==============================================================================
+2. INTRODUCTION                                        *pwarp.nvim*
+
+pwarp.nvim is a Neovim plugin designed to help manage and warp between your
+projects quickly and efficiently.
+
+
+==============================================================================
+3. INSTALLATION                                        *pwarp-installation*
+
+Install the plugin using your preferred package manager.
+
+Using lazy.nvim:
+
+lua
+{
+"aoantov/pwarp.nvim",
+ opts = {
+  -- Configuration options can be set here
+  }
+ }
+}
+<
+
+==============================================================================
+4. CONFIGURATION                                    *pwarp-configuration*
+
+pwarp.nvim can be configured by passing a table to the setup() function:
+
+lua
+require("pwarp").setup({
+    enabled = true, -- can disable plugin (enabled by default)
+    config = "/path/to/config/file" -- path to JSON config file (overrides all properties configured through opts)
+    projects = { -- projects to switch between
+      {
+        name = "project",
+        path = "path/to/project"
+      }
+    }
+  }
+})
+<
+
+==============================================================================
+5. Methods                                                 *pwarp-methods*
+  Current methods:
+   - list
+   - go_to
+
+  pwarp.list()                                             *pwarp.list*
+  List all available projects except the current one.
+  Example:
+    require("pwarp").list()
+
+  pwarp.go_to(project_name)                                 *pwarp.go_to*
+  Switch to the specified project by name.
+
+  Parameters:
+    - project_name: The name of the project to switch to.
+
+  Example:
+    require("pwarp").go_to("project_name")
+
+
+==============================================================================
+6. Commands                                                *pwarp-commands*
+     - Warp: Shows list of all projects and allows you to select one to switch
+       to.
+     - WarpTo: Switches to the specified project by name.
+
+
+vim:tw=78:ts=8:ft=help:norl:
+

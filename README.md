@@ -33,7 +33,7 @@ return {
 - neovim >= 0.11
 - telescope.nvim
 
-## Commands
+## Methods
 
 #### List projects
 
@@ -44,5 +44,10 @@ require("pwarp").list() -- list (telescope) all configured projects
 #### Go to specific project
 
 ```lua
-require("pwarp").goto("project_name") -- go to specific project
+require("pwarp").go_to("project_name") -- go to specific project
 ```
+
+## Commands
+
+- `Warp` - list all configured projects and select one to go to
+- `WarpTo` - go to specific project by name
