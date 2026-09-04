@@ -1,0 +1,9 @@
+pwarp-commands	pwarp.txt	/*pwarp-commands*
+pwarp-configuration	pwarp.txt	/*pwarp-configuration*
+pwarp-contents	pwarp.txt	/*pwarp-contents*
+pwarp-installation	pwarp.txt	/*pwarp-installation*
+pwarp-methods	pwarp.txt	/*pwarp-methods*
+pwarp.go_to	pwarp.txt	/*pwarp.go_to*
+pwarp.list	pwarp.txt	/*pwarp.list*
+pwarp.nvim	pwarp.txt	/*pwarp.nvim*
+pwarp.txt	pwarp.txt	/*pwarp.txt*
