@@ -65,21 +65,21 @@ require("pwarp").setup({
 5. Methods                                                 *pwarp-methods*
   Current methods:
    - list
-   - goto
+   - go_to
 
   pwarp.list()                                             *pwarp.list*
   List all available projects except the current one.
   Example:
     require("pwarp").list()
 
-  pwarp.goto(project_name)                                 *pwarp.goto*
+  pwarp.go_to(project_name)                                 *pwarp.go_to*
   Switch to the specified project by name.
 
   Parameters:
     - project_name: The name of the project to switch to.
 
   Example:
-    require("pwarp").goto("project_name")
+    require("pwarp").go_to("project_name")
 
 
 ==============================================================================
