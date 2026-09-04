@@ -1,4 +1,4 @@
-.PHONY: lint 
+.PHONY: lint test 
 
 test:
 	nvim --headless --noplugin -u scripts/minimal.vim -c "PlenaryBustedDirectory tests/ {minimal_init = 'scripts/minimal.vim'}"
