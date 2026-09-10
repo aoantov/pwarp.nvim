@@ -1,50 +1,15 @@
 name: Linting and style checking
-
 on:
   push:
     branches:
       - "main"
-  pull_request:
-    branches:
-      - "main"
-  workflow_dispatch:
-
 jobs:
-  tests:
-    name: Testing
+  semantic:
+    name: Semantic Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: rhysd/action-setup-vim@v1
+      - uses: cycjimmy/semantic-release-action@v4
         with:
-          neovim: true
-          version: stable
-
-      - name: Tests
-        run: make test
-  luacheck:
-    name: Luacheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Prepare
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y luarocks
-          sudo luarocks install luacheck
-
-      - name: Lint
-        run: make lint
-
-  stylua:
-    name: stylua
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: JohnnyMorganz/stylua-action@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --color always --check .
+          branch: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
