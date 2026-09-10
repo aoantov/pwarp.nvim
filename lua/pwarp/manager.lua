@@ -66,6 +66,31 @@ function M.list()
   })
 end
 
+-- Get project names
+--- @return string[]
+function M.get_project_names()
+  local projects = config.get_projects()
+  local names = {}
+  for _, project in ipairs(projects) do
+    table.insert(names, project.name)
+  end
+
+  return names
+end
+
+-- Jump to project with the provided name
+--- @param name string
+function M.go_to(name)
+  local project = config.get_project(name)
+
+  if project == nil then
+    print("No project named '" .. name .. "'")
+    return
+  end
+
+  close_buffs_and_goto(project.path)
+end
+
 -- Jump to project with the provided name
 --- @param name string
 function M.go_to(name)
