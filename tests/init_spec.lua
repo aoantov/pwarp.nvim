@@ -1,7 +1,7 @@
 describe("pwarp", function()
   local config = require("pwarp.config")
+  local manager = require("pwarp.manager")
   local pwarp = require("pwarp")
-  local stub = require("luassert.stub")
 
   before_each(function()
     -- reset state
@@ -94,5 +94,12 @@ describe("pwarp", function()
     assert.are_equal(true, success)
     assert.are_equal(0, #projects)
   end)
-  -- TODO: add go_to tests
+  it("when get project names from manager, should return valid list", function()
+    pwarp.setup({ projects = { { name = "test", path = "/home" } } })
+
+    local project_names = manager.get_project_names()
+
+    assert.are_equal(1, #project_names)
+    assert.are_equal("test", project_names[1])
+  end)
 end)
