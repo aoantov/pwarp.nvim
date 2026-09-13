@@ -2,9 +2,7 @@
 
 ## Description
 
-#### Pet project to quickly switch between defined projects
-
-#### Attempt at first Neovim plugin
+#### A lightweight Neovim plugin for quickly jumping between project
 
 ## Installation
 
