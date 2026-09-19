@@ -91,17 +91,4 @@ function M.go_to(name)
   close_buffs_and_goto(project.path)
 end
 
--- Jump to project with the provided name
---- @param name string
-function M.go_to(name)
-  local project = config.get_project(name)
-
-  if project == nil then
-    print("No project named '" .. name .. "'")
-    return
-  end
-
-  close_buffs_and_goto(project.path)
-end
-
 return M
