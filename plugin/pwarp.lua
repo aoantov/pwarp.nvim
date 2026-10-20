@@ -27,4 +27,5 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
     require("pwarp.manager").save_current()
   end,
+  desc = "Save the current project on exit",
 })
