@@ -21,3 +21,10 @@ end, {
     return matches
   end,
 })
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  group = vim.api.nvim_create_augroup("PWarp", { clear = true }),
+  callback = function()
+    require("pwarp.manager").save_current()
+  end,
+})

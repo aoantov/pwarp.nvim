@@ -25,6 +25,10 @@ return {
 }
 ```
 
+## Buffers
+
+Open file buffers are remembered per project (saved when warping away or quitting Neovim, stored in `stdpath('data')/pwarp_buffers.json`) and restored when you warp back.
+
 ## Dependencies
 
 - neovim >= 0.11

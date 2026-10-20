@@ -98,4 +98,18 @@ function M.get_project(name)
   return nil
 end
 
+--- Get project by path
+--- @param path string
+--- @return Project | nil
+function M.get_project_by_path(path)
+  local target = vim.fs.normalize(vim.fs.abspath(path))
+  for i = 1, #state.projects do
+    if vim.fs.normalize(vim.fs.abspath(state.projects[i].path)) == target then
+      return state.projects[i]
+    end
+  end
+
+  return nil
+end
+
 return M

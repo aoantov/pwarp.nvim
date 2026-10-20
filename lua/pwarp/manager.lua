@@ -41,10 +41,27 @@ local function close_buffers()
   end
 end
 
---- @param path string
-local function close_buffs_and_goto(path)
+--- @param project Project
+local function close_buffs_and_goto(project)
+  local session = require("pwarp.session")
+  local current_project = config.get_project_by_path(vim.fn.getcwd())
+
+  if current_project ~= nil then
+    session.save(current_project)
+  end
+
   close_buffers()
-  vim.cmd("cd " .. path)
+  vim.cmd.cd(vim.fn.fnameescape(project.path))
+  session.restore(project)
+end
+
+-- Save buffers of the current project (if it is a configured one)
+function M.save_current()
+  local current_project = config.get_project_by_path(vim.fn.getcwd())
+
+  if current_project ~= nil then
+    require("pwarp.session").save(current_project)
+  end
 end
 
 -- List projects
@@ -61,7 +78,7 @@ function M.list()
     title = "Projects",
     elements = view_elements,
     on_select = function(element)
-      close_buffs_and_goto(element.value.path)
+      close_buffs_and_goto(element.value)
     end,
   })
 end
@@ -88,7 +105,7 @@ function M.go_to(name)
     return
   end
 
-  close_buffs_and_goto(project.path)
+  close_buffs_and_goto(project)
 end
 
 return M
