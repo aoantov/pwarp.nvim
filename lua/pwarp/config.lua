@@ -4,12 +4,10 @@ local M = {}
 
 --- @alias Project {path: string, name: string}
 --- @class SwitchConfig
---- @field enabled boolean
 --- @field projects Project[]
 --- @class SwitchConfig
 local state = {
   projects = {},
-  enabled = true,
 }
 
 --- @param projects Project[]
@@ -28,11 +26,7 @@ end
 
 --- @param opts Opts
 local function update_state(opts)
-  if opts.enabled ~= nil then
-    state.enabled = opts.enabled
-  end
-
-  if state.enabled and opts.projects ~= nil and opts.projects ~= {} then
+  if opts.projects ~= nil and opts.projects ~= {} then
     state.projects = map_to_projects(opts.projects)
   end
 end
