@@ -34,7 +34,7 @@ local function write_store(store)
 end
 
 --- @param project Project
-local function get_key(project)
+local function gen_key(project)
   return project.name
 end
 
@@ -52,7 +52,7 @@ function M.save(project)
   end
 
   local store = read_store()
-  local key = get_key(project)
+  local key = gen_key(project)
   store[key] = nil
 
   if #files > 0 then
@@ -64,7 +64,7 @@ end
 
 --- @param project Project
 function M.restore(project)
-  local entry = read_store()[get_key(project)]
+  local entry = read_store()[gen_key(project)]
   if entry == nil then
     return
   end
