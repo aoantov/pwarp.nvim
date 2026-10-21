@@ -80,4 +80,12 @@ function M.restore(project)
   end
 end
 
+function M.reset()
+  local result = vim.fn.delete(store_path)
+  vim.notify(
+    "Session store reset: " .. (result == 0 and "success" or "failed"),
+    result == 0 and vim.log.levels.INFO or vim.log.levels.ERROR
+  )
+end
+
 return M

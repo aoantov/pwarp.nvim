@@ -55,13 +55,17 @@ local function close_buffs_and_goto(project)
   session.restore(project)
 end
 
--- Save buffers of the current project (if it is a configured one)
 function M.save_current()
   local current_project = config.get_project_by_path(vim.fn.getcwd())
 
   if current_project ~= nil then
     require("pwarp.session").save(current_project)
   end
+end
+
+function M.reset_store()
+  require("pwarp.session").reset()
+  print("Project store reset")
 end
 
 -- List projects

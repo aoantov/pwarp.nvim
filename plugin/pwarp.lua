@@ -1,7 +1,13 @@
 vim.api.nvim_create_user_command("Warp", function()
-  require("pwarp").list()
+  require("pwarp.manager").list()
 end, {
   desc = "List all projects and warp to one",
+})
+
+vim.api.nvim_create_user_command("WarpBuffReset", function()
+  require("pwarp.manager").reset_store()
+end, {
+  desc = "Reset the buffer store for all projects",
 })
 
 vim.api.nvim_create_user_command("WarpTo", function(opts)
