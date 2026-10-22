@@ -49,7 +49,6 @@ pwarp.nvim can be configured by passing a table to the setup() function:
 
 lua
 require("pwarp").setup({
-    enabled = true, -- can disable plugin (enabled by default)
     config = "/path/to/config/file" -- path to JSON config file (overrides all properties configured through opts)
     projects = { -- projects to switch between
       {

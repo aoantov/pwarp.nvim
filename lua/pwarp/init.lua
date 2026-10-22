@@ -2,7 +2,6 @@ local M = {}
 
 --- @alias OptsProject {name: string, path: string}
 --- @class Opts
---- @field enabled? boolean
 --- @field projects? OptsProject[]
 --- @field config? string
 

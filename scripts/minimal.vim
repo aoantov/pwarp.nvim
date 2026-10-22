@@ -1,5 +1,6 @@
 set rtp +=./
 set rtp +=../plenary.nvim/
+set rtp +=../telescope.nvim/
 
 runtime! plugin/plenary.vim
 runtime! plugin/pwarp.lua

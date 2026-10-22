@@ -14,7 +14,6 @@ return {
   -- used to disable plugin
   -- enabled = false
   opts = {
-    enabled = true, -- can disable plugin (enabled by default)
     config = "/path/to/config/file" -- path to JSON config file (overrides all properties configured through opts)
     projects = { -- projects to switch between
       {
