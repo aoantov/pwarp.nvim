@@ -83,7 +83,7 @@ end
 function M.reset()
   local code = vim.fn.delete(store_path)
 
-  if not code then
+  if code == 0 then
     vim.notify("Session store reset: success", vim.log.levels.INFO)
   else
     vim.notify("Session store reset: failed", vim.log.levels.ERROR)
