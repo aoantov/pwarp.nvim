@@ -86,6 +86,7 @@ require("pwarp").setup({
      - Warp: Shows list of all projects and allows you to select one to switch
        to.
      - WarpTo: Switches to the specified project by name.
+     - WarpBuffReset: Reset memory of buffers for all projects
 
 
 vim:tw=78:ts=8:ft=help:norl:

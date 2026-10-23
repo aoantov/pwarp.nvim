@@ -6,4 +6,3 @@
 - [x] Hide current project from list
 - [x] Documentation
 - [x] Remember open buffers per project
-- [x] Decide whether to use vim.notify or error

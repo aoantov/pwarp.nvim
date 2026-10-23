@@ -52,3 +52,4 @@ require("pwarp").go_to("project_name") -- go to specific project
 
 - `Warp` - list all configured projects and select one to go to
 - `WarpTo` - go to specific project by name
+- `WarpBuffReset` - go to specific project by name
