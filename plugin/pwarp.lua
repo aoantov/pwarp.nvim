@@ -4,12 +4,6 @@ end, {
   desc = "List all projects and warp to one",
 })
 
-vim.api.nvim_create_user_command("WarpBuffReset", function()
-  require("pwarp.manager").reset_store()
-end, {
-  desc = "Reset the buffer store for all projects",
-})
-
 vim.api.nvim_create_user_command("WarpTo", function(opts)
   require("pwarp").go_to(opts.args)
 end, {
@@ -26,12 +20,4 @@ end, {
     end
     return matches
   end,
-})
-
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  group = vim.api.nvim_create_augroup("PWarp", { clear = true }),
-  callback = function()
-    require("pwarp.manager").save_current()
-  end,
-  desc = "Save the current project on exit",
 })

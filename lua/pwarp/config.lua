@@ -5,9 +5,10 @@ local M = {}
 --- @alias Project {path: string, name: string}
 --- @class SwitchConfig
 --- @field projects Project[]
---- @class SwitchConfig
+--- @field retain_bufs boolean
 local state = {
   projects = {},
+  retain_bufs = true,
 }
 
 --- @param projects OptsProject[]
@@ -29,6 +30,10 @@ end
 local function update_state(opts)
   if opts.projects ~= nil and opts.projects ~= {} then
     state.projects = map_to_projects(opts.projects)
+  end
+
+  if opts.retain_bufs ~= nil then
+    state.retain_bufs = opts.retain_bufs
   end
 end
 
@@ -111,6 +116,11 @@ function M.get_project_by_path(path)
   end
 
   return nil
+end
+
+--- @return boolean
+function M.get_retain_bufs_state()
+  return state.retain_bufs
 end
 
 return M

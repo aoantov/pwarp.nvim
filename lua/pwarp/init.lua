@@ -4,11 +4,12 @@ local M = {}
 --- @class Opts
 --- @field projects? OptsProject[]
 --- @field config? string
+--- @field retain_bufs? boolean
 
 -- Setup
 --- @param opts? Opts
 function M.setup(opts)
-  require("pwarp.config").setup(opts)
+  require("pwarp.manager").setup(opts)
 end
 
 -- List projects
