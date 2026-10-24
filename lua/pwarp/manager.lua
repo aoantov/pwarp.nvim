@@ -3,6 +3,7 @@ local config = require("pwarp.config")
 local M = {}
 
 --- @param project Project
+--- @return string
 local function generate_view_element_name(project)
   local elem_path = string.sub(project.path, -30)
   if #elem_path < #project.path then

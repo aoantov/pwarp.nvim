@@ -92,18 +92,6 @@ describe("pwarp", function()
     local store_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pwarp_buffers.json")
     local test_file_path = vim.fs.joinpath(vim.fn.getcwd(), "tests", "cfg", "cfg.json")
 
-    local function get_non_empty_buf_count()
-      local count = 0
-
-      for _, open_buf in ipairs(vim.api.nvim_list_bufs()) do
-        if vim.api.nvim_buf_get_name(open_buf) ~= "" then
-          count = count + 1
-        end
-      end
-
-      return count
-    end
-
     local function delete_open_bufs()
       for _, open_buf in ipairs(vim.api.nvim_list_bufs()) do
         vim.api.nvim_buf_delete(open_buf, { force = true })
@@ -127,7 +115,7 @@ describe("pwarp", function()
       delete_open_bufs()
       session.restore(test_projects[1])
 
-      local actual_buf_count = get_non_empty_buf_count()
+      local actual_buf_count = #vim.api.nvim_list_bufs()
       local actual_buf_path = vim.api.nvim_buf_get_name(0)
 
       delete_open_bufs()
@@ -136,7 +124,7 @@ describe("pwarp", function()
 
       assert.are_equal(1, actual_buf_count)
       assert.are_equal(test_file_path, actual_buf_path)
-      assert.are_equal(0, get_non_empty_buf_count())
+      assert.are_equal(0, #vim.api.nvim_list_bufs())
     end)
   end)
 end)

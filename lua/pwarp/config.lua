@@ -10,7 +10,8 @@ local state = {
   projects = {},
 }
 
---- @param projects Project[]
+--- @param projects OptsProject[]
+--- @return Project[]
 local function map_to_projects(projects)
   local project_map = {}
 

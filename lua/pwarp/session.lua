@@ -34,11 +34,18 @@ local function write_store(store)
 end
 
 --- @param project Project
+--- @return string
 local function gen_key(project)
   return project.name
 end
 
--- Save listed file buffers of the rurrent session for the project
+--- @param buf number
+--- @return boolean
+local function is_buf_valid(buf)
+  local name = vim.api.nvim_buf_get_name(buf)
+  return vim.bo[buf].buflisted and vim.bo[buf].buftype == "" and name ~= "" and vim.uv.fs_stat(name) ~= nil
+end
+
 --- @param project Project
 function M.save(project)
   local files = {}
@@ -46,14 +53,13 @@ function M.save(project)
 
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     local name = vim.api.nvim_buf_get_name(buf)
-    if vim.bo[buf].buflisted and vim.bo[buf].buftype == "" and name ~= "" and vim.uv.fs_stat(name) ~= nil then
+    if is_buf_valid(buf) then
       table.insert(files, name)
     end
   end
 
   local store = read_store()
   local key = gen_key(project)
-  store[key] = nil
 
   if #files > 0 then
     store[key] = { files = files, current = current }
