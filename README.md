@@ -25,6 +25,10 @@ return {
 }
 ```
 
+## Buffers
+
+Open file buffers are remembered per project (saved when warping away or quitting Neovim, stored in `stdpath('data')/pwarp_buffers.json`) and restored when you warp back.
+
 ## Dependencies
 
 - neovim >= 0.11
@@ -48,3 +52,4 @@ require("pwarp").go_to("project_name") -- go to specific project
 
 - `Warp` - list all configured projects and select one to go to
 - `WarpTo` - go to specific project by name
+- `WarpBuffReset` - go to specific project by name

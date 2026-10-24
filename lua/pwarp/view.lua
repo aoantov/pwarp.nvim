@@ -6,8 +6,9 @@ local actions = require("telescope.actions")
 
 local M = {}
 
---- @alias ActionOpts {on_select: function}
+--- @alias ActionOpts {on_select: fun(element: ViewElement)}
 --- @param opts ActionOpts
+--- @return fun(prompt_buf: integer): boolean
 local function create_select_action(opts)
   return function(prompt_buf)
     actions.select_default:replace(function()
@@ -22,8 +23,9 @@ local function create_select_action(opts)
   end
 end
 
---- @alias ViewDropdownOpts {attach_actions: function, title: string, elements: ViewElement[] }
+--- @alias ViewDropdownOpts {attach_actions: fun(prompt_buf: integer): boolean, title: string, elements: ViewElement[] }
 --- @param opts ViewDropdownOpts
+--- @return fun()
 local function create_dropdown(opts)
   return function()
     local ts_opts = require("telescope.themes").get_dropdown({})
@@ -49,9 +51,8 @@ local function create_dropdown(opts)
 end
 
 --- @alias ViewElement {name: string, value: unknown, ordinal?: string}
---- @alias ViewOpts {title: string, on_select: function, elements: ViewElement[]}
+--- @alias ViewOpts {title: string, on_select: fun(element: ViewElement), elements: ViewElement[]}
 --- @param opts ViewOpts
---- TODO: change it so that it does not create the objects every call
 function M.show(opts)
   local attach_actions = create_select_action({
     on_select = opts.on_select,

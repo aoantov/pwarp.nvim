@@ -11,14 +11,14 @@ local function validate_project(project)
   end
 end
 
---- @param projects OptsProject
+--- @param projects OptsProject[]
 local function validate_projects(projects)
   for index = 1, #projects do
     validate_project(projects[index])
   end
 end
 
---- @param projects Project[]
+--- @param projects? OptsProject[]
 --- @return boolean
 local function are_projects_present(projects)
   return projects ~= nil and projects ~= {}
