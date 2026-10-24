@@ -45,11 +45,12 @@ describe("pwarp.view", function()
     local function open(on_select)
       view.show({ title = "t", on_select = on_select, elements = {} })
       local replaced
-      local map_actions = { select_default = {
-        replace = function(_, fn)
-          replaced = fn
-        end,
-      } }
+      local map_actions =
+        { select_default = {
+          replace = function(_, fn)
+            replaced = fn
+          end,
+        } }
       local original = actions.select_default
       actions.select_default = map_actions.select_default
       local result = captured.attach_mappings(1)

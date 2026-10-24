@@ -16,6 +16,8 @@ jobs:
         with:
           neovim: true
           version: stable
+        env:
+          TMPDIR: ${{ runner.temp }}
 
       - name: Tests
         run: make test
