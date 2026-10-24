@@ -53,7 +53,6 @@ end
 --- @alias ViewElement {name: string, value: unknown, ordinal?: string}
 --- @alias ViewOpts {title: string, on_select: fun(element: ViewElement), elements: ViewElement[]}
 --- @param opts ViewOpts
---- TODO: change it so that it does not create the objects every call
 function M.show(opts)
   local attach_actions = create_select_action({
     on_select = opts.on_select,

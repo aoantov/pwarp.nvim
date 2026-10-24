@@ -119,7 +119,7 @@ function M.get_project_by_path(path)
 end
 
 --- @return boolean
-function M.get_retain_bufs_state()
+function M.are_bufs_retained()
   return state.retain_bufs
 end
 
