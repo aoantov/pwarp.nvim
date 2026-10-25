@@ -12,7 +12,8 @@ function M.setup(opts)
   config.setup(opts)
 
   if is_session_enabled() then
-    require("pwarp.session").setup()
+    local session_opts = opts and opts.buffers and { store_path = opts.buffers.file } or nil
+    require("pwarp.session").setup(session_opts)
   end
 end
 

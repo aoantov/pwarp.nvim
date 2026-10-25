@@ -1,10 +1,11 @@
 local M = {}
 
+--- @alias BufferOpts  {file?: string, persist?: boolean}
 --- @alias OptsProject {name: string, path: string}
 --- @class Opts
 --- @field projects? OptsProject[]
 --- @field config? string
---- @field retain_bufs? boolean
+--- @field buffers? BufferOpts
 
 -- Setup
 --- @param opts? Opts

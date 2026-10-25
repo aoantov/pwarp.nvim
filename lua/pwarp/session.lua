@@ -108,7 +108,13 @@ local function setup_autocmds()
   })
 end
 
-function M.setup()
+--- @alias SessionOpts {store_path?: string} | nil
+--- @param opts SessionOpts
+function M.setup(opts)
+  if opts and opts.store_path then
+    store_path = opts.store_path
+  end
+
   session_state = read_store()
   setup_autocmds()
 end

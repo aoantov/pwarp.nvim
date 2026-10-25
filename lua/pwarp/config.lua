@@ -5,10 +5,10 @@ local M = {}
 --- @alias Project {path: string, name: string}
 --- @class SwitchConfig
 --- @field projects Project[]
---- @field retain_bufs boolean
+--- @field fn.persist_bufs boolean
 local state = {
   projects = {},
-  retain_bufs = true,
+  persist_bufs = true,
 }
 
 --- @param projects OptsProject[]
@@ -32,8 +32,8 @@ local function update_state(opts)
     state.projects = map_to_projects(opts.projects)
   end
 
-  if opts.retain_bufs ~= nil then
-    state.retain_bufs = opts.retain_bufs
+  if opts.buffers ~= nil and opts.buffers.persist ~= nil then
+    state.persist_bufs = opts.buffers.persist
   end
 end
 
@@ -120,7 +120,7 @@ end
 
 --- @return boolean
 function M.are_bufs_retained()
-  return state.retain_bufs
+  return state.persist_bufs
 end
 
 return M

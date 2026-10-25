@@ -31,6 +31,14 @@ function M.validate_opts(opts)
     error("Empty config options")
   end
 
+  if opts.buffers ~= nil and opts.buffers.persist ~= nil then
+    general_utils.check_types({ [opts.buffers.persist] = "boolean" })
+  end
+
+  if opts.buffers ~= nil and opts.buffers.file ~= nil then
+    general_utils.check_types({ [opts.buffers.file] = "string" })
+  end
+
   if are_projects_present(opts.projects) then
     validate_projects(opts.projects)
   end

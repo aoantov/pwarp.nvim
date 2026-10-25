@@ -1,5 +1,5 @@
 vim.api.nvim_create_user_command("Warp", function()
-  require("pwarp.manager").list()
+  require("pwarp").list()
 end, {
   desc = "List all projects and warp to one",
 })

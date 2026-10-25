@@ -10,6 +10,7 @@ describe("pwarp", function()
   before_each(function()
     pwarp.setup({
       projects = {},
+      buffers = { persist = false },
     })
   end)
 
@@ -89,8 +90,13 @@ describe("pwarp", function()
 
   describe("session", function()
     local session = require("pwarp.session")
-    local store_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pwarp_buffers.json")
     local test_file_path = vim.fs.joinpath(vim.fn.getcwd(), "tests", "cfg", "cfg.json")
+
+    --- @type BufferOpts
+    local test_buff_config = {
+      persist = true,
+      file = vim.fs.joinpath(vim.fn.getcwd(), "tests", "cfg", "test_bufs.json"),
+    }
 
     local function delete_open_bufs()
       for _, open_buf in ipairs(vim.api.nvim_list_bufs()) do
@@ -116,13 +122,13 @@ describe("pwarp", function()
     end
 
     before_each(function()
-      vim.fn.delete(store_path)
+      vim.fn.delete(test_buff_config.file)
       delete_open_bufs()
       delete_cmds()
     end)
 
     it("when save session, should remember buffers", function()
-      pwarp.setup({ projects = test_projects, retain_bufs = true })
+      pwarp.setup({ projects = test_projects, buffers = test_buff_config })
 
       local buf = vim.api.nvim_create_buf(true, false) -- (listed, scratch)
       vim.api.nvim_buf_set_name(buf, test_file_path)
@@ -147,8 +153,8 @@ describe("pwarp", function()
       assert.is_true(#after_buf_names > #buf_names)
     end)
 
-    it("when retain_bufs is not enabled, should not have commands", function()
-      pwarp.setup({ projects = test_projects, retain_bufs = false })
+    it("when buffer config is not enabled, should not have commands", function()
+      pwarp.setup({ projects = test_projects, buffers = { persist = false, file = test_buff_config.file } })
 
       local commands = vim.api.nvim_get_commands({})
       local has_autocmds = pcall(vim.api.nvim_get_autocmds, { group = "PWarp" })
@@ -157,8 +163,8 @@ describe("pwarp", function()
       assert.is_false(has_autocmds)
     end)
 
-    it("when retain_bufs is enabled, should have commands", function()
-      pwarp.setup({ projects = test_projects, retain_bufs = true })
+    it("when buffer config is enabled, should have commands", function()
+      pwarp.setup({ projects = test_projects, buffers = test_buff_config })
 
       local commands = vim.api.nvim_get_commands({})
 
@@ -167,8 +173,9 @@ describe("pwarp", function()
       assert.is_not_nil(commands["WarpBuffReset"])
       assert.is_true(has_autocmds)
     end)
+
     it("when VimLeave is triggered, should save buffers", function()
-      pwarp.setup({ projects = test_projects, retain_bufs = true })
+      pwarp.setup({ projects = test_projects, buffers = test_buff_config })
 
       local buf = vim.api.nvim_create_buf(true, false) -- (listed, scratch)
       vim.api.nvim_buf_set_name(buf, test_file_path)

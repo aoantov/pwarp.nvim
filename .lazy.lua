@@ -15,7 +15,6 @@ return {
     lazy = false,
     opts = {
       projects = {},
-      retain_bufs = true,
     },
   },
   {
