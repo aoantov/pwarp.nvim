@@ -98,33 +98,94 @@ describe("pwarp", function()
       end
     end
 
+    local function get_buf_names()
+      local buf_names = {}
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        table.insert(buf_names, vim.api.nvim_buf_get_name(buf))
+      end
+      return buf_names
+    end
+
+    local function delete_cmds()
+      if vim.api.nvim_get_commands({})["WarpBuffReset"] then
+        vim.api.nvim_del_user_command("WarpBuffReset")
+      end
+      if pcall(vim.api.nvim_get_autocmds, { group = "PWarp" }) then
+        vim.api.nvim_del_augroup_by_name("PWarp")
+      end
+    end
+
     before_each(function()
       vim.fn.delete(store_path)
       delete_open_bufs()
+      delete_cmds()
     end)
 
     it("when save session, should remember buffers", function()
-      pwarp.setup({ projects = test_projects })
+      pwarp.setup({ projects = test_projects, retain_bufs = true })
 
       local buf = vim.api.nvim_create_buf(true, false) -- (listed, scratch)
       vim.api.nvim_buf_set_name(buf, test_file_path)
       vim.api.nvim_set_current_buf(buf)
 
+      local prev_buf_names = get_buf_names()
       session.save(test_projects[1])
 
       delete_open_bufs()
       session.restore(test_projects[1])
 
-      local actual_buf_count = #vim.api.nvim_list_bufs()
-      local actual_buf_path = vim.api.nvim_buf_get_name(0)
+      local after_buf_names = get_buf_names()
 
       delete_open_bufs()
       session.reset()
       session.restore(test_projects[1])
+      local buf_names = get_buf_names()
 
-      assert.are_equal(1, actual_buf_count)
-      assert.are_equal(test_file_path, actual_buf_path)
-      assert.are_equal(0, #vim.api.nvim_list_bufs())
+      for i, name in ipairs(prev_buf_names) do
+        assert.are_equal(name, after_buf_names[i])
+      end
+      assert.is_true(#after_buf_names > #buf_names)
+    end)
+
+    it("when retain_bufs is not enabled, should not have commands", function()
+      pwarp.setup({ projects = test_projects, retain_bufs = false })
+
+      local commands = vim.api.nvim_get_commands({})
+      local has_autocmds = pcall(vim.api.nvim_get_autocmds, { group = "PWarp" })
+
+      assert.is_nil(commands["WarpBuffReset"])
+      assert.is_false(has_autocmds)
+    end)
+
+    it("when retain_bufs is enabled, should have commands", function()
+      pwarp.setup({ projects = test_projects, retain_bufs = true })
+
+      local commands = vim.api.nvim_get_commands({})
+
+      local has_autocmds = pcall(vim.api.nvim_get_autocmds, { group = "PWarp" })
+
+      assert.is_not_nil(commands["WarpBuffReset"])
+      assert.is_true(has_autocmds)
+    end)
+    it("when VimLeave is triggered, should save buffers", function()
+      pwarp.setup({ projects = test_projects, retain_bufs = true })
+
+      local buf = vim.api.nvim_create_buf(true, false) -- (listed, scratch)
+      vim.api.nvim_buf_set_name(buf, test_file_path)
+      vim.api.nvim_set_current_buf(buf)
+
+      local prev_buf_names = get_buf_names()
+      session.save(test_projects[1])
+
+      delete_open_bufs()
+      vim.cmd("doautocmd VimLeavePre")
+
+      session.restore(test_projects[1])
+      local after_buf_names = get_buf_names()
+
+      for i, name in ipairs(prev_buf_names) do
+        assert.are_equal(name, after_buf_names[i])
+      end
     end)
   end)
 end)

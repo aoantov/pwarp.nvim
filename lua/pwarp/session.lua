@@ -3,6 +3,8 @@ local M = {}
 local store_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pwarp_buffers.json")
 
 --- @alias SessionStore  table<string, {files: string[], current?: string}>
+local session_state = {}
+
 --- @return SessionStore
 local function read_store()
   local file = io.open(store_path, "r")
@@ -33,6 +35,21 @@ local function write_store(store)
   file:close()
 end
 
+local function reset_store()
+  local code = vim.fn.delete(store_path)
+  session_state = {}
+
+  if code == 0 then
+    vim.notify("Session store reset: success", vim.log.levels.INFO)
+  else
+    vim.notify("Session store reset: failed", vim.log.levels.ERROR)
+  end
+end
+
+local function save_store()
+  write_store(session_state)
+end
+
 --- @param project Project
 --- @return string
 local function gen_key(project)
@@ -47,7 +64,7 @@ local function is_buf_valid(buf)
 end
 
 --- @param project Project
-function M.save(project)
+local function save_project(project)
   local files = {}
   local current = vim.api.nvim_buf_get_name(0)
 
@@ -58,19 +75,52 @@ function M.save(project)
     end
   end
 
-  local store = read_store()
+  local store = session_state
   local key = gen_key(project)
 
   if #files > 0 then
     store[key] = { files = files, current = current }
   end
+  session_state = store
+end
 
-  write_store(store)
+local function save_current_project()
+  local project = require("pwarp.config").get_project_by_path(vim.fn.getcwd())
+  if project ~= nil then
+    save_project(project)
+  end
+end
+
+local function setup_autocmds()
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    group = vim.api.nvim_create_augroup("PWarp", { clear = true }),
+    callback = function()
+      save_current_project()
+      save_store()
+    end,
+    desc = "Save the current project on exit",
+  })
+
+  vim.api.nvim_create_user_command("WarpBuffReset", function()
+    reset_store()
+  end, {
+    desc = "Reset the buffer store for all projects",
+  })
+end
+
+function M.setup()
+  session_state = read_store()
+  setup_autocmds()
+end
+
+--- @param project Project
+function M.save(project)
+  save_project(project)
 end
 
 --- @param project Project
 function M.restore(project)
-  local entry = read_store()[gen_key(project)]
+  local entry = session_state[gen_key(project)]
   if entry == nil then
     return
   end
@@ -87,13 +137,7 @@ function M.restore(project)
 end
 
 function M.reset()
-  local code = vim.fn.delete(store_path)
-
-  if code == 0 then
-    vim.notify("Session store reset: success", vim.log.levels.INFO)
-  else
-    vim.notify("Session store reset: failed", vim.log.levels.ERROR)
-  end
+  reset_store()
 end
 
 return M

@@ -7,29 +7,12 @@ local function is_session_enabled()
   return config.are_bufs_retained()
 end
 
--- TODO: revisit this function for improvement on location
-local function setup_session_autocmds()
-  vim.api.nvim_create_autocmd("VimLeavePre", {
-    group = vim.api.nvim_create_augroup("PWarp", { clear = true }),
-    callback = function()
-      require("pwarp.manager").save_current()
-    end,
-    desc = "Save the current project on exit",
-  })
-
-  vim.api.nvim_create_user_command("WarpBuffReset", function()
-    require("pwarp.manager").reset_store()
-  end, {
-    desc = "Reset the buffer store for all projects",
-  })
-end
-
 --- @param opts? Opts
 function M.setup(opts)
   config.setup(opts)
 
   if is_session_enabled() then
-    setup_session_autocmds()
+    require("pwarp.session").setup()
   end
 end
 
@@ -76,8 +59,10 @@ end
 --- @param project Project
 local function switch_project(project)
   local session
+  local current_project
+
   if is_session_enabled() then
-    -- Load the session module first as it fails to find it when moving to another project
+    current_project = config.get_project_by_path(vim.fn.getcwd())
     session = require("pwarp.session")
   end
 
@@ -86,24 +71,10 @@ local function switch_project(project)
 
   if is_session_enabled() then
     session.restore(project)
-    local current_project = config.get_project_by_path(vim.fn.getcwd())
-
     if current_project ~= nil then
       session.save(current_project)
     end
   end
-end
-
-function M.save_current()
-  local current_project = config.get_project_by_path(vim.fn.getcwd())
-
-  if current_project ~= nil then
-    require("pwarp.session").save(current_project)
-  end
-end
-
-function M.reset_store()
-  require("pwarp.session").reset()
 end
 
 -- List projects
