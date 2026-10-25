@@ -1,9 +1,9 @@
 local M = {}
 
-local store_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pwarp_buffers.json")
-
 --- @alias SessionStore  table<string, {files: string[], current?: string}>
 local session_state = {}
+
+local store_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pwarp_buffers.json")
 
 --- @return SessionStore
 local function read_store()
@@ -37,7 +37,6 @@ end
 
 local function reset_store()
   local code = vim.fn.delete(store_path)
-  session_state = {}
 
   if code == 0 then
     vim.notify("Session store reset: success", vim.log.levels.INFO)
@@ -75,13 +74,9 @@ local function save_project(project)
     end
   end
 
-  local store = session_state
   local key = gen_key(project)
 
-  if #files > 0 then
-    store[key] = { files = files, current = current }
-  end
-  session_state = store
+  session_state[key] = { files = files, current = current }
 end
 
 local function save_current_project()
@@ -91,9 +86,35 @@ local function save_current_project()
   end
 end
 
+--- @param project Project
+local function restore_project(project)
+  local entry = session_state[gen_key(project)]
+  if entry == nil then
+    return
+  end
+
+  for _, file in ipairs(entry.files or {}) do
+    if vim.uv.fs_stat(file) ~= nil then
+      vim.cmd.badd(vim.fn.fnameescape(file))
+    end
+  end
+
+  if entry.current and vim.uv.fs_stat(entry.current) ~= nil then
+    vim.cmd.edit(vim.fn.fnameescape(entry.current))
+  end
+end
+
+local function restore_current_project()
+  local project = require("pwarp.config").get_project_by_path(vim.fn.getcwd())
+  if project ~= nil then
+    restore_project(project)
+  end
+end
+
 local function setup_autocmds()
+  local group = vim.api.nvim_create_augroup("PWarp", { clear = true })
   vim.api.nvim_create_autocmd("VimLeavePre", {
-    group = vim.api.nvim_create_augroup("PWarp", { clear = true }),
+    group = group,
     callback = function()
       save_current_project()
       save_store()
@@ -101,7 +122,16 @@ local function setup_autocmds()
     desc = "Save the current project on exit",
   })
 
+  vim.api.nvim_create_autocmd("UIEnter", {
+    group = group,
+    callback = function()
+      restore_current_project()
+    end,
+    desc = "Restore the current project on enter",
+  })
+
   vim.api.nvim_create_user_command("WarpBuffReset", function()
+    session_state = {}
     reset_store()
   end, {
     desc = "Reset the buffer store for all projects",
@@ -126,23 +156,11 @@ end
 
 --- @param project Project
 function M.restore(project)
-  local entry = session_state[gen_key(project)]
-  if entry == nil then
-    return
-  end
-
-  for _, file in ipairs(entry.files or {}) do
-    if vim.uv.fs_stat(file) ~= nil then
-      vim.cmd.badd(vim.fn.fnameescape(file))
-    end
-  end
-
-  if entry.current and vim.uv.fs_stat(entry.current) ~= nil then
-    vim.cmd.edit(vim.fn.fnameescape(entry.current))
-  end
+  restore_project(project)
 end
 
 function M.reset()
+  session_state = {}
   reset_store()
 end
 

@@ -4,7 +4,7 @@ local M = {}
 
 --- @return boolean
 local function is_session_enabled()
-  return config.are_bufs_retained()
+  return config.are_bufs_persisted()
 end
 
 --- @param opts? Opts
@@ -60,11 +60,14 @@ end
 --- @param project Project
 local function switch_project(project)
   local session
-  local current_project
 
   if is_session_enabled() then
-    current_project = config.get_project_by_path(vim.fn.getcwd())
     session = require("pwarp.session")
+    local current_project = config.get_project_by_path(vim.fn.getcwd())
+
+    if current_project then
+      session.save(current_project)
+    end
   end
 
   close_buffers()
@@ -72,9 +75,6 @@ local function switch_project(project)
 
   if is_session_enabled() then
     session.restore(project)
-    if current_project ~= nil then
-      session.save(current_project)
-    end
   end
 end
 
