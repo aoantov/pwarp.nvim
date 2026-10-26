@@ -1,85 +1,198 @@
 describe("pwarp", function()
-  local config = require("pwarp.config")
-  local manager = require("pwarp.manager")
   local pwarp = require("pwarp")
+  local test_projects = {
+    {
+      name = "test",
+      path = "/home",
+    },
+  }
 
   before_each(function()
-    -- reset state
     pwarp.setup({
       projects = {},
+      buffers = { persist = false },
     })
   end)
-  it("when opts are nil, should not throw error and not setup", function()
-    pwarp.setup()
-    local projects = config.get_projects()
-    assert.are_equal(0, #projects)
-  end)
-  it("when opts are {}, should not throw error and not setup", function()
-    pwarp.setup({})
-    local projects = config.get_projects()
-    assert.are_equal(0, #projects)
-  end)
-  it("when opts have projects, should setup the projects in state", function()
-    pwarp.setup({ projects = { { name = "test", path = "/home" } } })
-    local projects = config.get_projects()
-    assert.are_equal(1, #projects)
-  end)
-  it("when opts have projects,but is malformed, should throw error", function()
-    local success = pcall(function()
-      pwarp.setup({ projects = { { path = "/home" } } })
+
+  describe("config", function()
+    local config = require("pwarp.config")
+    it("when opts are nil, should not throw error and not setup", function()
+      pwarp.setup()
+      local projects = config.get_projects()
+      assert.are_equal(0, #projects)
     end)
-    assert.are_equal(false, success)
-  end)
-  it("when opts have projects,but path is malformed, should throw error", function()
-    local success = pcall(function()
-      pwarp.setup({ projects = { { name = "test", path = "fafs" } } })
+    it("when opts are {}, should not throw error and not setup", function()
+      pwarp.setup({})
+      local projects = config.get_projects()
+      assert.are_equal(0, #projects)
     end)
-    assert.are_equal(false, success)
+    it("when opts have projects, should setup the projects in state", function()
+      pwarp.setup({ projects = { { name = "test", path = "/home" } } })
+      local projects = config.get_projects()
+      assert.are_equal(1, #projects)
+    end)
+    it("when opts have projects,but config file is provided, config file has priority", function()
+      local success = pcall(function()
+        pwarp.setup({
+          projects = test_projects,
+          config = "./tests/cfg/cfg.json",
+        })
+      end)
+
+      assert.are_equal(true, success)
+      local expected_projects = config.get_projects()
+
+      success = pcall(function()
+        pwarp.setup({
+          projects = test_projects,
+          config = "./tests/cfg/cfg.json",
+        })
+      end)
+
+      local projects = config.get_projects()
+      assert.are_equal(true, success)
+      assert.are_equal(#expected_projects, #projects)
+    end)
   end)
-  it("when opts have projects,but config file is provided, config file has priority", function()
-    local success = pcall(function()
-      pwarp.setup({
-        projects = {
-          {
-            name = "Some",
-            path = "./tests",
-          },
-        },
-        config = "./tests/cfg/cfg.json",
-      })
+
+  describe("general", function()
+    it("when opts have projects,but is malformed, should throw error", function()
+      local success = pcall(function()
+        pwarp.setup({ projects = { { path = "/home" } } })
+      end)
+      assert.are_equal(false, success)
+    end)
+    it("when opts have projects,but path is malformed, should throw error", function()
+      local success = pcall(function()
+        pwarp.setup({ projects = { { name = "test", path = "fafs" } } })
+      end)
+      assert.are_equal(false, success)
+    end)
+    it("when config file path is not valid, should throw exception", function()
+      local success = pcall(function()
+        pwarp.setup({ config = "./tests/does_not_exist.json" })
+      end)
+      assert.are_equal(false, success)
+    end)
+  end)
+
+  describe("manager", function()
+    local manager = require("pwarp.manager")
+    it("when get project names from manager, should return valid list", function()
+      pwarp.setup({ projects = test_projects })
+
+      local project_names = manager.get_project_names()
+
+      assert.are_equal(1, #project_names)
+      assert.are_equal("test", project_names[1])
+    end)
+  end)
+
+  describe("session", function()
+    local session = require("pwarp.session")
+    local test_file_path = vim.fs.joinpath(vim.fn.getcwd(), "tests", "cfg", "cfg.json")
+
+    --- @type BufferOpts
+    local test_buff_config = {
+      persist = true,
+      file = vim.fs.joinpath(vim.fn.getcwd(), "tests", "cfg", "test_bufs.json"),
+    }
+
+    local function delete_open_bufs()
+      for _, open_buf in ipairs(vim.api.nvim_list_bufs()) do
+        vim.api.nvim_buf_delete(open_buf, { force = true })
+      end
+    end
+
+    local function get_buf_names()
+      local buf_names = {}
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        table.insert(buf_names, vim.api.nvim_buf_get_name(buf))
+      end
+      return buf_names
+    end
+
+    local function delete_cmds()
+      if vim.api.nvim_get_commands({})["WarpBuffReset"] then
+        vim.api.nvim_del_user_command("WarpBuffReset")
+      end
+      if pcall(vim.api.nvim_get_autocmds, { group = "PWarp" }) then
+        vim.api.nvim_del_augroup_by_name("PWarp")
+      end
+    end
+
+    before_each(function()
+      vim.fn.delete(test_buff_config.file)
+      delete_open_bufs()
+      delete_cmds()
     end)
 
-    assert.are_equal(true, success)
-    local expected_projects = config.get_projects()
+    it("when save session, should remember buffers", function()
+      pwarp.setup({ projects = test_projects, buffers = test_buff_config })
 
-    success = pcall(function()
-      pwarp.setup({
-        projects = {
-          {
-            name = "Some",
-            path = "./tests",
-          },
-        },
-        config = "./tests/cfg/cfg.json",
-      })
+      local buf = vim.api.nvim_create_buf(true, false) -- (listed, scratch)
+      vim.api.nvim_buf_set_name(buf, test_file_path)
+      vim.api.nvim_set_current_buf(buf)
+
+      local prev_buf_names = get_buf_names()
+      session.save(test_projects[1])
+
+      delete_open_bufs()
+      session.restore(test_projects[1])
+
+      local after_buf_names = get_buf_names()
+
+      delete_open_bufs()
+      session.reset()
+      session.restore(test_projects[1])
+      local buf_names = get_buf_names()
+
+      for i, name in ipairs(prev_buf_names) do
+        assert.are_equal(name, after_buf_names[i])
+      end
+      assert.is_true(#after_buf_names > #buf_names)
     end)
 
-    local projects = config.get_projects()
-    assert.are_equal(true, success)
-    assert.are_equal(#expected_projects, #projects)
-  end)
-  it("when config file path is not valid, should throw exception", function()
-    local success = pcall(function()
-      pwarp.setup({ config = "./tests/does_not_exist.json" })
+    it("when buffer config is not enabled, should not have commands", function()
+      pwarp.setup({ projects = test_projects, buffers = { persist = false, file = test_buff_config.file } })
+
+      local commands = vim.api.nvim_get_commands({})
+      local has_autocmds = pcall(vim.api.nvim_get_autocmds, { group = "PWarp" })
+
+      assert.is_nil(commands["WarpBuffReset"])
+      assert.is_false(has_autocmds)
     end)
-    assert.are_equal(false, success)
-  end)
-  it("when get project names from manager, should return valid list", function()
-    pwarp.setup({ projects = { { name = "test", path = "/home" } } })
 
-    local project_names = manager.get_project_names()
+    it("when buffer config is enabled, should have commands", function()
+      pwarp.setup({ projects = test_projects, buffers = test_buff_config })
 
-    assert.are_equal(1, #project_names)
-    assert.are_equal("test", project_names[1])
+      local commands = vim.api.nvim_get_commands({})
+
+      local has_autocmds = pcall(vim.api.nvim_get_autocmds, { group = "PWarp" })
+
+      assert.is_not_nil(commands["WarpBuffReset"])
+      assert.is_true(has_autocmds)
+    end)
+
+    it("when VimLeave is triggered, should save buffers", function()
+      pwarp.setup({ projects = test_projects, buffers = test_buff_config })
+
+      local buf = vim.api.nvim_create_buf(true, false) -- (listed, scratch)
+      vim.api.nvim_buf_set_name(buf, test_file_path)
+      vim.api.nvim_set_current_buf(buf)
+
+      local prev_buf_names = get_buf_names()
+      session.save(test_projects[1])
+
+      delete_open_bufs()
+      vim.cmd("doautocmd VimLeavePre")
+
+      session.restore(test_projects[1])
+      local after_buf_names = get_buf_names()
+
+      for i, name in ipairs(prev_buf_names) do
+        assert.are_equal(name, after_buf_names[i])
+      end
+    end)
   end)
 end)

@@ -11,14 +11,14 @@ local function validate_project(project)
   end
 end
 
---- @param projects OptsProject
+--- @param projects OptsProject[]
 local function validate_projects(projects)
   for index = 1, #projects do
     validate_project(projects[index])
   end
 end
 
---- @param projects Project[]
+--- @param projects? OptsProject[]
 --- @return boolean
 local function are_projects_present(projects)
   return projects ~= nil and projects ~= {}
@@ -29,6 +29,14 @@ end
 function M.validate_opts(opts)
   if opts == nil or opts == {} then
     error("Empty config options")
+  end
+
+  if opts.buffers ~= nil and opts.buffers.persist ~= nil then
+    general_utils.check_types({ [opts.buffers.persist] = "boolean" })
+  end
+
+  if opts.buffers ~= nil and opts.buffers.file ~= nil then
+    general_utils.check_types({ [opts.buffers.file] = "string" })
   end
 
   if are_projects_present(opts.projects) then

@@ -5,12 +5,14 @@ local M = {}
 --- @alias Project {path: string, name: string}
 --- @class SwitchConfig
 --- @field projects Project[]
---- @class SwitchConfig
+--- @field fn.persist_bufs boolean
 local state = {
   projects = {},
+  persist_bufs = true,
 }
 
---- @param projects Project[]
+--- @param projects OptsProject[]
+--- @return Project[]
 local function map_to_projects(projects)
   local project_map = {}
 
@@ -28,6 +30,10 @@ end
 local function update_state(opts)
   if opts.projects ~= nil and opts.projects ~= {} then
     state.projects = map_to_projects(opts.projects)
+  end
+
+  if opts.buffers ~= nil and opts.buffers.persist ~= nil then
+    state.persist_bufs = opts.buffers.persist
   end
 end
 
@@ -96,6 +102,25 @@ function M.get_project(name)
   end
 
   return nil
+end
+
+--- Get project by path
+--- @param path string
+--- @return Project | nil
+function M.get_project_by_path(path)
+  local target = vim.fs.normalize(vim.fs.abspath(path))
+  for i = 1, #state.projects do
+    if vim.fs.normalize(vim.fs.abspath(state.projects[i].path)) == target then
+      return state.projects[i]
+    end
+  end
+
+  return nil
+end
+
+--- @return boolean
+function M.are_bufs_persisted()
+  return state.persist_bufs
 end
 
 return M

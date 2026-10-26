@@ -5,3 +5,5 @@
 - [x] Telescope show all available projects
 - [x] Hide current project from list
 - [x] Documentation
+- [x] Remember open buffers per project
+- [ ] Improve validation of opts

@@ -1,8 +1,9 @@
 set rtp +=./
-set rtp +=../plenary.nvim/
-set rtp +=../telescope.nvim/
+set rtp +=deps/plenary.nvim/
+set rtp +=deps/telescope.nvim/
 
 runtime! plugin/plenary.vim
+runtime! plugin/telescope.vim
 runtime! plugin/pwarp.lua
 
 set nowritebackup

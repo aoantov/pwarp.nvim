@@ -2,7 +2,23 @@ local config = require("pwarp.config")
 
 local M = {}
 
+--- @return boolean
+local function is_session_enabled()
+  return config.are_bufs_persisted()
+end
+
+--- @param opts? Opts
+function M.setup(opts)
+  config.setup(opts)
+
+  if is_session_enabled() then
+    local session_opts = opts and opts.buffers and { store_path = opts.buffers.file } or nil
+    require("pwarp.session").setup(session_opts)
+  end
+end
+
 --- @param project Project
+--- @return string
 local function generate_view_element_name(project)
   local elem_path = string.sub(project.path, -30)
   if #elem_path < #project.path then
@@ -41,10 +57,25 @@ local function close_buffers()
   end
 end
 
---- @param path string
-local function close_buffs_and_goto(path)
+--- @param project Project
+local function switch_project(project)
+  local session
+
+  if is_session_enabled() then
+    session = require("pwarp.session")
+    local current_project = config.get_project_by_path(vim.fn.getcwd())
+
+    if current_project then
+      session.save(current_project)
+    end
+  end
+
   close_buffers()
-  vim.cmd("cd " .. path)
+  vim.cmd.cd(vim.fn.fnameescape(project.path))
+
+  if is_session_enabled() then
+    session.restore(project)
+  end
 end
 
 -- List projects
@@ -53,7 +84,7 @@ function M.list()
   local view_elements = get_view_elements_from(projects)
 
   if #view_elements == 0 then
-    print("No projects to list")
+    vim.notify("No projects to show", vim.log.levels.INFO)
     return
   end
 
@@ -61,7 +92,7 @@ function M.list()
     title = "Projects",
     elements = view_elements,
     on_select = function(element)
-      close_buffs_and_goto(element.value.path)
+      switch_project(element.value)
     end,
   })
 end
@@ -84,11 +115,11 @@ function M.go_to(name)
   local project = config.get_project(name)
 
   if project == nil then
-    print("No project named '" .. name .. "'")
+    vim.notify("Project not found: " .. name, vim.log.levels.ERROR)
     return
   end
 
-  close_buffs_and_goto(project.path)
+  switch_project(project)
 end
 
 return M
